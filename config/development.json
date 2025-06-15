@@ -1,0 +1,5 @@
+{
+  "name": "wallet-api",
+  "env":"development",
+  "DECIMAL_PLACES": 4
+}
