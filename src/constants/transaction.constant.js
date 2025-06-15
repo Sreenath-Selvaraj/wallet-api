@@ -1,0 +1,4 @@
+exports.TRANSACTION_TYPES = {
+  CREDIT: 'CREDIT',
+  DEBIT: 'DEBIT',
+}

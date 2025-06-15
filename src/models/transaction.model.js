@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { TRANSACTION_TYPES } = require("../constants/transaction.constant");
 
 const transactionSchema = new mongoose.Schema({
   walletId: { 
@@ -23,7 +24,7 @@ const transactionSchema = new mongoose.Schema({
   },
   type: { 
     type: String, 
-    enum: ['CREDIT', 'DEBIT'], 
+    enum: [TRANSACTION_TYPES.CREDIT, TRANSACTION_TYPES.DEBIT], 
     required: true 
   },
   transactionId: {

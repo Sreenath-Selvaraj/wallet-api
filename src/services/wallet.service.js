@@ -3,15 +3,23 @@ const TransactionModel = require("../models/transaction.model");
 const { getNextSequence } = require("../utils/sequence");
 const { roundOff, plus } = require("@arithmetic");
 const state = require("@boot/db").get();
-
+const { TRANSACTION_TYPES } = require("../constants/transaction.constant");
+const { SEQUENCE_TYPES } = require("../constants/sequenceType.constants");
 class WalletService {
+  /**
+   * Creates a new wallet and an initial transaction.
+   * @param {Object} params - Wallet creation parameters.
+   * @param {number} [params.balance=0] - Initial balance for the wallet.
+   * @param {string} params.name - Name of the wallet owner.
+   * @returns {Promise<Object>} Wallet details including id, balance, transactionId, name, and date.
+   */
   async setupWallet({ balance = 0, name }) {
     let wallet, transaction, walletId, transactionId;
 
     await state.connection.transaction(async () => {
       balance = roundOff(balance);
-      walletId = await getNextSequence("wallet");
-      transactionId = await getNextSequence("transaction");
+      walletId = await getNextSequence(SEQUENCE_TYPES.WALLET);
+      transactionId = await getNextSequence(SEQUENCE_TYPES.TRANSACTION);
 
       wallet = await WalletModel.create({
         walletId,
@@ -25,7 +33,7 @@ class WalletService {
         balance: balance,
         amount: balance,
         description: "Initial Wallet Creation",
-        type: "CREDIT",
+        type: TRANSACTION_TYPES.CREDIT,
       });
     });
 
@@ -38,6 +46,15 @@ class WalletService {
     };
   }
 
+  /**
+   * Handles a credit or debit transaction for a wallet.
+   * @param {string|number} walletId - The wallet's unique identifier.
+   * @param {Object} params - Transaction parameters.
+   * @param {number} params.amount - Amount to credit (positive) or debit (negative).
+   * @param {string} params.description - Description of the transaction.
+   * @returns {Promise<Object>} Updated balance and transactionId.
+   * @throws {Error} If wallet not found or insufficient balance.
+   */
   async handleTransaction(walletId, { amount, description }) {
     let transactionId, newBalance;
 
@@ -55,7 +72,7 @@ class WalletService {
 
       wallet.balance = newBalance;
 
-      transactionId = await getNextSequence("transaction");
+      transactionId = await getNextSequence(SEQUENCE_TYPES.TRANSACTION);
 
       await TransactionModel.create({
         transactionId,
@@ -63,7 +80,7 @@ class WalletService {
         amount: txnAmount,
         balance: newBalance,
         description,
-        type: txnAmount > 0 ? "CREDIT" : "DEBIT",
+        type: txnAmount > 0 ? TRANSACTION_TYPES.CREDIT : TRANSACTION_TYPES.DEBIT,
       });
 
       await wallet.save();
@@ -75,6 +92,14 @@ class WalletService {
     };
   }
 
+  /**
+   * Retrieves a paginated list of transactions for a wallet.
+   * @param {string|number} walletId - The wallet's unique identifier.
+   * @param {number} [skip=0] - Number of transactions to skip (for pagination).
+   * @param {number} [limit=10] - Maximum number of transactions to return.
+   * @returns {Promise<Array<Object>>} List of transaction objects.
+   * @throws {Error} If no transactions found for the wallet.
+   */
   async getTransactions(walletId, skip = 0, limit = 10) {
     const wallet = await WalletModel.findOne({  walletId: parseInt(walletId) });
     const transaction = await TransactionModel.find({ walletId: wallet._id })
@@ -97,6 +122,12 @@ class WalletService {
     }));
   }
 
+  /**
+   * Retrieves wallet details by walletId.
+   * @param {string|number} id - The wallet's unique identifier.
+   * @returns {Promise<Object>} Wallet details.
+   * @throws {Error} If wallet not found.
+   */
   async getWallet(id) {
     const wallet = await WalletModel.findOne({ walletId: parseInt(id) });
     if (!wallet) throw new Error("Wallet not found");
