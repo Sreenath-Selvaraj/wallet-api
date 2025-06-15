@@ -112,8 +112,8 @@ class WalletService {
       throw new Error("No transactions found for this wallet");
     }
     return transaction.map((txn) => ({
-      id: txn._id,
-      walletId: txn.walletId.toString(),
+      id: txn.transactionId.toString(),
+      walletId: walletId.toString(),
       amount: roundOff(txn.amount),
       balance: roundOff(txn.balance),
       description: txn.description,
@@ -133,8 +133,7 @@ class WalletService {
     if (!wallet) throw new Error("Wallet not found");
 
     return {
-      id: wallet._id,
-      walletId: wallet.walletId.toString(),
+      id: wallet.walletId.toString(),
       balance: roundOff(wallet.balance),
       name: wallet.name,
       date: wallet.date,
