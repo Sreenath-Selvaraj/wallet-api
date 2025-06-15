@@ -1,6 +1,7 @@
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const logger = require('@logger');
+const { requestLogger } = require('@utils/requestLogger');
 
 
 const PORT = process.env.PORT || 3000;
@@ -9,6 +10,7 @@ const setupServer = async (app) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(helmet());
+  app.use(requestLogger);
 
   server = app.listen(PORT, () => logger.info(`Server running on port ${PORT}`));
 };
