@@ -20,8 +20,7 @@
     "helmet": "^8.1.0",
     "module-alias": "^2.2.3",
     "mongoose": "^8.15.2",
-    "pino": "^9.7.0",
-    "pino-http": "^10.5.0"
+    "pino": "^9.7.0"
   },
   "_moduleAliases": {
     "@root": ".",
