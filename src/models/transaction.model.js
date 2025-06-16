@@ -5,7 +5,8 @@ const transactionSchema = new mongoose.Schema({
   walletId: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Wallet', 
-    required: true 
+    required: true,
+    index: true
   },
   amount: { 
     type: mongoose.Types.Decimal128, 

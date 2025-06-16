@@ -16,7 +16,8 @@ const walletSchema = new mongoose.Schema({
   walletId: {
     type: Number, 
     unique: true, 
-    required: true 
+    required: true,
+    index: true
   }
 }, {
   timestamps: true,
