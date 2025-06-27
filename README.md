@@ -1,4 +1,4 @@
-# highlevel-wallet-api
+# wallet-api
 
 A simple wallet API for creating wallets, handling transactions, and retrieving wallet and transaction information.
 
